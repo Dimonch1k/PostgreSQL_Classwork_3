@@ -1,0 +1,235 @@
+
+
+
+---------------------------------------------------------------------- task 0 --------------------------------------
+
+-- Resquest 1
+-- Вивести кількість палат, місткість яких більша за 10.
+
+-- SELECT *
+-- FROM wards
+-- WHERE wards.places > 10;
+
+
+
+
+-- Resquest 2
+-- Вивести назви корпусів та кількість палат у кожному з них.
+
+-- SELECT ds.building AS building, COUNT(w.id)
+-- FROM wards AS w
+-- JOIN departments AS ds
+-- ON w.department_id = ds.id
+-- GROUP BY building;
+
+
+
+
+
+-- Resquest 3
+-- Вивести назви відділень та кількість палат у кожному з них.
+
+-- SELECT ds.name AS department, SUM(w.places) AS places
+-- FROM wards AS w
+-- JOIN departments AS ds
+-- ON w.department_id = ds.id
+-- GROUP BY department;
+
+
+
+
+
+-- Resquest 4
+-- Вивести назви відділень та сумарну надбавку лікарів у кожному з них.
+
+-- SELECT des.name AS department, SUM(dos.premium) as sum_premium
+-- FROM departments AS des
+-- JOIN wards as w
+-- ON w.department_id = des.id
+-- JOIN doctors_examinations as de
+-- ON de.ward_id = w.id
+-- JOIN doctors as dos
+-- ON de.doctor_id = dos.id
+-- GROUP BY department;
+
+
+
+
+-- Resquest 5
+-- Вивести назви відділень, у яких проводять обстеження 5 та більше лікарів.
+
+-- SELECT des.name AS department_name, COUNT(dos.id) AS ds_count
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors AS dos
+-- ON d_e.doctor_id = dos.id
+-- JOIN wards AS ws
+-- ON d_e.ward_id = ws.id
+-- JOIN departments AS des
+-- ON ws.department_id = des.id
+-- GROUP BY department_name;
+
+
+
+
+
+-- Resquest 6
+-- Вивести кількість лікарів та їх сумарну зарплату (сума ставки та надбавки).
+
+-- SELECT d_e.doctor_id, dos.salary, dos.premium
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors as dos
+-- ON d_e.doctor_id = dos.id;
+
+-- SELECT COUNT(d_e.id) as dos_count, SUM(dos.salary + dos.premium)
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors as dos
+-- ON d_e.doctor_id = dos.id
+-- GROUP BY GROUPING SETS (());
+
+
+
+
+-- Resquest 7
+-- Вивести середню зарплату (сума ставки та надбавки) лікарів.
+
+-- SELECT AVG(dos.salary + dos.premium)
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors as dos
+-- ON d_e.doctor_id = dos.id
+-- GROUP BY GROUPING SETS (());
+
+
+
+
+-- Resquest 8
+-- Вивести назви палат із мінімальною місткістю.   
+
+-- SELECT MIN(ws.places)
+-- FROM wards as ws
+-- GROUP BY GROUPING SETS (());
+   
+   
+   
+   
+-- Resquest 9
+-- Вивести в яких із корпусів 1, 6, 7 та 8, сумарна кількість
+-- місць у палатах перевищує 100. При цьому враховувати
+-- лише палати з кількістю місць більше 10.
+
+
+
+
+
+
+------------------------------------------------------------------- task 1-------------------------------------------
+
+-- Request 1
+-- Вивести назви відділень, що знаходяться у тому ж корпусі, що й відділення “Cardiology”.
+
+-- SELECT *
+-- FROM departments
+-- WHERE departments.building = (SELECT building FROM departments WHERE name = 'Cardiology')
+-- AND name <> 'Cardiology';
+
+
+
+
+
+-- Request 2
+-- Вивести назви відділень, що знаходяться у тому ж корпусі, що й відділення “Gastroenterology” та “General Surgery”.
+
+-- SELECT *
+-- FROM departments 
+-- WHERE departments.building = (SELECT building FROM departments WHERE name = 'Gastroenterology')
+-- AND name <> 'Gastroenterology'
+-- OR departments.building = (SELECT building FROM departments WHERE name = 'General Surgery')
+-- AND name <> 'General Surgery';
+
+
+
+
+-- Request 3
+-- Вивести назву відділення, яке отримало найменше пожертвувань.
+
+-- SELECT *
+-- FROM departments
+-- WHERE id = (SELECT department_id 
+ -- FROM donations
+ -- GROUP BY department_id
+ -- ORDER BY COUNT(*) LIMIT 1);
+
+
+
+
+-- Request 4
+-- Вивести прізвища лікарів, ставка яких більша, ніж у лікаря “Thomas Gerada”.
+
+-- SELECT *
+-- FROM doctors
+-- WHERE salary > (SELECT salary
+ -- FROM doctors
+ -- WHERE name = 'Thomas' AND surname = 'Gerada');
+
+
+
+-- Request 5
+-- Вивести назви палат, місткість яких більша, ніж середня місткість у палатах відділення “Microbiology”.
+
+SELECT name
+FROM wards 
+WHERE places > (SELECT AVG(places) FROM wards WHERE );
+
+
+
+
+
+
+
+
+
+
+-- Request 5
+-- Вивести назви палат, місткість яких більша, ніж середня місткість у палатах відділення “Microbiology”.
+
+-- SELECT name
+-- FROM wards
+-- WHERE capacity > (SELECT AVG(capacity) FROM wards WHERE department_id = (SELECT id FROM departments WHERE name = 'Microbiology'));
+
+
+
+-- Request 6
+-- Вивести повні імена лікарів, зарплати яких (сума ставки та надбавки) перевищують більш ніж на 100 зарплату лікаря Anthony Davis.
+
+-- SELECT CONCAT(first_name, ' ', surname) AS full_name
+-- FROM doctors
+-- WHERE (rate + bonus) > (SELECT 100 * (rate + bonus) FROM doctors WHERE surname = 'Anthony Davis');
+
+
+
+-- Request 7
+-- Вивести назви відділень, у яких проводить обстеження лікар Joshua Bell.
+
+-- SELECT departments.name
+-- FROM departments
+-- INNER JOIN examinations ON departments.id = examinations.department_id
+-- INNER JOIN doctors ON examinations.doctor_id = doctors.id
+
+
+
+-- Task 8
+-- Вивести назви спонсорів, які не робили пожертвування відділенням “Neurology” та “Oncology”.
+
+-- SELECT sponsors.name
+-- FROM sponsors
+-- LEFT JOIN donations ON sponsors.id = donations.sponsor_id
+-- WHERE donations.department_id NOT IN (SELECT id FROM departments WHERE name IN ('Neurology', 'Oncology'));
+
+
+
+-- Task 9
+-- Вивести прізвища лікарів, які проводять обстеження у період з 12:00 до 15:00.
+
+-- SELECT surname
+-- FROM doctors
+-- INNER JOIN examinations ON doctors.id = examinations.doctor_id
+-- WHERE examinations.time BETWEEN '12:00' AND '15:00';

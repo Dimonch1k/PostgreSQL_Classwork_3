@@ -1,0 +1,130 @@
+DROP TABLE IF EXISTS doctors_examinations;
+DROP TABLE IF EXISTS wards;
+DROP TABLE IF EXISTS donations;
+
+DROP TABLE IF EXISTS sponsors;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS doctors;
+DROP TABLE IF EXISTS examinations;
+
+
+CREATE TABLE departments (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255) UNIQUE NOT NULL,
+	building INT NOT NULL CHECK(building BETWEEN 1 AND 5)
+);
+
+CREATE TABLE doctors (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255) NOT NULL CHECK(name <> ''),
+	surname VARCHAR(1000) NOT NULL CHECK(surname <> ''),
+	premium INT NOT NULL DEFAULT 0 CHECK(premium > -1),
+    salary INT NOT NULL CHECK(salary > 0)
+);
+
+CREATE TABLE examinations (
+	id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE CHECK (name <> '')
+);
+
+CREATE TABLE sponsors (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL UNIQUE
+);
+
+
+
+CREATE TABLE donations (
+	id SERIAL PRIMARY KEY,
+    amount INT NOT NULL CHECK (amount > 0),
+    don_date DATE NOT NULL,
+    department_id INT NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
+    sponsor_id INT NOT NULL REFERENCES sponsors(id) ON DELETE CASCADE
+);
+
+CREATE TABLE wards (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE CHECK (name <> ''),
+    places INT NOT NULL CHECK (places > 0),
+    department_id INT NOT NULL REFERENCES departments(id)
+);
+
+CREATE TABLE doctors_examinations (
+	id SERIAL PRIMARY KEY,
+    doctor_id INT NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+	
+    start_time TIME NOT NULL CHECK (start_time >= '08:00' AND start_time <= '18:00'),
+    end_time TIME NOT NULL CHECK (end_time > start_time),
+    examination_id INT NOT NULL,
+    ward_id INT NOT NULL REFERENCES wards(id)
+);
+
+
+
+
+
+
+-- Buildings
+INSERT INTO departments (name, building) VALUES
+('Cardiology', 3),
+('Gastroenterology', 1),
+('General Surgery', 2),
+('Department 1', 1),
+('Department 2', 1),
+('Department 3', 3),
+('Department 4', 2);
+
+-- Doctors
+INSERT INTO doctors (name, surname, premium, salary) VALUES
+('John', 'Doe', 1000.00, 5000.00),
+('Jane', 'Smith', 1500.00, 6000.00),
+('Michael', 'Johnson', 2000.00, 7000.00),
+('Thomas', 'Gerada', 1200.00, 5500.00);
+
+-- Examinations
+INSERT INTO examinations (name) VALUES
+('Blood Test'),
+('X-ray'),
+('MRI'),
+('Ultrasound');
+
+-- Wards
+INSERT INTO wards (name, places, department_id) VALUES
+('Ward A', 20, 1),
+('Ward B', 5, 2),
+('Ward C', 25, 3),
+('Ward D', 8, 4),
+('Ward E', 30, 5);
+
+-- Doctors' Examinations
+INSERT INTO doctors_examinations (doctor_id, start_time, end_time, examination_id, ward_id) VALUES
+(1, '09:00', '11:00', 1, 1),
+(1, '09:00', '11:00', 3, 3),
+(1, '09:00', '11:00', 4, 5),
+(2, '10:00', '12:00', 2, 3),
+(2, '10:00', '12:00', 3, 2),
+(2, '10:00', '12:00', 4, 4),
+(3, '11:00', '13:00', 3, 5),
+(3, '11:00', '13:00', 2, 4),
+(3, '11:00', '13:00', 1, 1),
+(4, '12:00', '14:00', 3, 3),
+(4, '12:00', '14:00', 2, 2),
+(4, '12:00', '14:00', 1, 5);
+
+
+
+-- Sponsors
+INSERT INTO sponsors (name) VALUES
+('Sponsor 1'),
+('Sponsor 2'),
+('Sponsor 3');
+
+-- Donations
+INSERT INTO donations (amount, don_date, department_id, sponsor_id) VALUES
+(100, '2024-04-23', 1, 1),
+(200, '2024-04-22', 2, 1),
+(150, '2024-04-21', 4, 3),
+(350, '2024-04-21', 2, 2),
+(400, '2024-04-21', 3, 3),
+(50, '2024-04-21', 4, 2),
+(300, '2024-04-20', 5, 3);
