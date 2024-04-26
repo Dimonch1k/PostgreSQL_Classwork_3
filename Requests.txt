@@ -1,7 +1,7 @@
 
 
 
----------------------------------------------------------------------- task 0 --------------------------------------
+------------------------------------------------------------------- Request 0 -------------------------------------------------------------------
 
 -- Resquest 1
 -- Вивести кількість палат, місткість яких більша за 10.
@@ -121,7 +121,7 @@
 
 
 
-------------------------------------------------------------------- task 1-------------------------------------------
+------------------------------------------------------------------- Request 1 -------------------------------------------------------------------
 
 -- Request 1
 -- Вивести назви відділень, що знаходяться у тому ж корпусі, що й відділення “Cardiology”.
@@ -130,7 +130,6 @@
 -- FROM departments
 -- WHERE departments.building = (SELECT building FROM departments WHERE name = 'Cardiology')
 -- AND name <> 'Cardiology';
-
 
 
 
@@ -172,64 +171,83 @@
 
 
 
--- Request 5
--- Вивести назви палат, місткість яких більша, ніж середня місткість у палатах відділення “Microbiology”.
-
-SELECT name
-FROM wards 
-WHERE places > (SELECT AVG(places) FROM wards WHERE );
-
-
-
-
-
-
-
-
-
 
 -- Request 5
 -- Вивести назви палат, місткість яких більша, ніж середня місткість у палатах відділення “Microbiology”.
 
--- SELECT name
--- FROM wards
--- WHERE capacity > (SELECT AVG(capacity) FROM wards WHERE department_id = (SELECT id FROM departments WHERE name = 'Microbiology'));
+-- SELECT w.name AS ward, w.places, des.name AS department
+-- FROM wards AS w
+-- JOIN departments AS des
+-- ON w.department_id = des.id
+-- WHERE w.places > (SELECT AVG(w.places)
+ -- FROM wards AS w
+ -- JOIN departments AS des
+ -- ON w.department_id = des.id
+ -- WHERE des.name = 'Microbiology'
+ -- );
+
 
 
 
 -- Request 6
 -- Вивести повні імена лікарів, зарплати яких (сума ставки та надбавки) перевищують більш ніж на 100 зарплату лікаря Anthony Davis.
 
--- SELECT CONCAT(first_name, ' ', surname) AS full_name
+-- SELECT *
 -- FROM doctors
--- WHERE (rate + bonus) > (SELECT 100 * (rate + bonus) FROM doctors WHERE surname = 'Anthony Davis');
+-- WHERE (salary + premium) > (
+ -- SELECT (salary + premium)
+ -- FROM doctors
+ -- WHERE name = 'Anthony' AND surname = 'Davis'
+ -- );
+
 
 
 
 -- Request 7
 -- Вивести назви відділень, у яких проводить обстеження лікар Joshua Bell.
 
--- SELECT departments.name
--- FROM departments
--- INNER JOIN examinations ON departments.id = examinations.department_id
--- INNER JOIN doctors ON examinations.doctor_id = doctors.id
+-- SELECT CONCAT(dos.name, ' ', dos.surname) as full_name, w.id, des.name 
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors as dos
+ -- ON d_e.doctor_id = dos.id
+-- JOIN wards as w
+ -- ON d_e.ward_id = w.id
+-- JOIN departments AS des 
+ -- ON w.department_id = des.id
+-- WHERE dos.name = 'Joshua' AND dos.surname = 'Bell'
+-- ORDER BY w.id;
 
 
 
--- Task 8
+
+-- Request 8
 -- Вивести назви спонсорів, які не робили пожертвування відділенням “Neurology” та “Oncology”.
 
--- SELECT sponsors.name
--- FROM sponsors
--- LEFT JOIN donations ON sponsors.id = donations.sponsor_id
--- WHERE donations.department_id NOT IN (SELECT id FROM departments WHERE name IN ('Neurology', 'Oncology'));
+-- SELECT sp.name, ds.amount, ds.don_date
+-- FROM donations AS ds
+-- JOIN sponsors AS sp
+-- ON ds.sponsor_id = sp.id
+-- WHERE ds.department_id <> (SELECT id 
+ -- FROM departments
+ -- WHERE name = 'Neurology' OR name = 'Oncology'
+ -- LIMIT 1)
+-- ORDER BY sp.name;
 
 
 
--- Task 9
+
+-- Request 9
 -- Вивести прізвища лікарів, які проводять обстеження у період з 12:00 до 15:00.
+-- Вивести обстеження
 
--- SELECT surname
--- FROM doctors
--- INNER JOIN examinations ON doctors.id = examinations.doctor_id
--- WHERE examinations.time BETWEEN '12:00' AND '15:00';
+-- SELECT DISTINCT 
+  -- dos.surname, 
+  -- d_e.start_time,
+  -- d_e.end_time
+-- FROM doctors_examinations AS d_e
+-- JOIN doctors AS dos
+  -- ON d_e.doctor_id = dos.id
+-- JOIN examinations AS exs
+  -- ON d_e.examination_id = exs.id
+-- WHERE d_e.start_time <= '12:00' AND d_e.end_time >= '15:00'
+-- ORDER BY d_e.start_time;

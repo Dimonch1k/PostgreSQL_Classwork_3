@@ -11,7 +11,8 @@ DROP TABLE IF EXISTS examinations;
 CREATE TABLE departments (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255) UNIQUE NOT NULL,
-	building INT NOT NULL CHECK(building BETWEEN 1 AND 5)
+	building INT NOT NULL CHECK(building BETWEEN 1 AND 5),
+	financing 
 );
 
 CREATE TABLE doctors (
@@ -31,6 +32,22 @@ CREATE TABLE sponsors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(100) NOT NULL UNIQUE
 );
+
+CREATE TABLE diseases (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE interns (
+	id SERIAL PRIMARY KEY,
+	doctor_id 
+);
+
+CREATE TABLE professors (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL UNIQUE
+);
+
 
 
 
@@ -55,6 +72,8 @@ CREATE TABLE doctors_examinations (
 	
     start_time TIME NOT NULL CHECK (start_time >= '08:00' AND start_time <= '18:00'),
     end_time TIME NOT NULL CHECK (end_time > start_time),
+	
+	disease_id INT NOT NULL REFERENCES diseases(id),
     examination_id INT NOT NULL,
     ward_id INT NOT NULL REFERENCES wards(id)
 );
@@ -69,15 +88,15 @@ INSERT INTO departments (name, building) VALUES
 ('Cardiology', 3),
 ('Gastroenterology', 1),
 ('General Surgery', 2),
-('Department 1', 1),
-('Department 2', 1),
-('Department 3', 3),
-('Department 4', 2);
+('Microbiology', 1),
+('Neurology', 1),
+('Oncology', 3),
+('Chemistry', 2);
 
 -- Doctors
 INSERT INTO doctors (name, surname, premium, salary) VALUES
-('John', 'Doe', 1000.00, 5000.00),
-('Jane', 'Smith', 1500.00, 6000.00),
+('Anthony', 'Davis', 1300.00, 6000.00),
+('Joshua', 'Bell', 1500.00, 6000.00),
 ('Michael', 'Johnson', 2000.00, 7000.00),
 ('Thomas', 'Gerada', 1200.00, 5500.00);
 
@@ -98,18 +117,18 @@ INSERT INTO wards (name, places, department_id) VALUES
 
 -- Doctors' Examinations
 INSERT INTO doctors_examinations (doctor_id, start_time, end_time, examination_id, ward_id) VALUES
-(1, '09:00', '11:00', 1, 1),
-(1, '09:00', '11:00', 3, 3),
-(1, '09:00', '11:00', 4, 5),
-(2, '10:00', '12:00', 2, 3),
-(2, '10:00', '12:00', 3, 2),
-(2, '10:00', '12:00', 4, 4),
-(3, '11:00', '13:00', 3, 5),
-(3, '11:00', '13:00', 2, 4),
-(3, '11:00', '13:00', 1, 1),
-(4, '12:00', '14:00', 3, 3),
-(4, '12:00', '14:00', 2, 2),
-(4, '12:00', '14:00', 1, 5);
+(1, '09:00', '14:00', 1, 1),
+(1, '09:00', '14:00', 3, 3),
+(1, '09:00', '14:00', 4, 5),
+(2, '10:00', '15:00', 2, 3),
+(2, '10:00', '15:00', 3, 2),
+(2, '10:00', '15:00', 4, 4),
+(3, '11:00', '16:00', 3, 5),
+(3, '11:00', '16:00', 2, 4),
+(3, '11:00', '16:00', 1, 1),
+(4, '12:00', '17:00', 3, 3),
+(4, '12:00', '17:00', 2, 2),
+(4, '12:00', '17:00', 1, 5);
 
 
 
